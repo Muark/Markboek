@@ -74,6 +74,7 @@ switch ($page) {
 	break;
 
 	case 'post':
+	if (isset($_POST['submit'])) {
 		$query = $db->prepare("INSERT INTO post (content, gebruiker_id, datum) VALUES (:content, :gebruiker_id, :datum)");
 		$datum = time() + 3600;
     	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
@@ -82,16 +83,34 @@ switch ($page) {
     	$query->execute();
     	$id = $_POST['gebruiker_id'];
         header("Location: wall.php");
+    }
+    else {
+    	header("Location: wall.php");
+    }
 	break;
 
 	case 'delete':
-		$query = $db->prepare("UPDATE post SET status=1 WHERE id=:id;");
+	$query = $db->prepare("SELECT post.gebruiker_id, gebruiker.email FROM post INNER JOIN gebruiker ON post.gebruiker_id = gebruiker.id WHERE post.id=:id");
+    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
+    $query->execute();
+    $row = $query->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['email'] == $row['email']) {
+		$query = $db->prepare("UPDATE post SET status=1 WHERE id=:id");
     	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
     	$query->execute();
     	header("Location: wall.php");
+    }
+    else {
+    	header("Location: wall.php");
+    }
     break;
 
     case 'postedit':
+    $query = $db->prepare("SELECT post.gebruiker_id, gebruiker.email FROM post INNER JOIN gebruiker ON post.gebruiker_id = gebruiker.id WHERE post.id=:id");
+    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
+    $query->execute();
+    $row = $query->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['email'] == $row['email']) {
 		$query = $db->prepare("SELECT * FROM post WHERE id=:id;");
     	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
     	$query->execute();
@@ -102,14 +121,23 @@ switch ($page) {
 		$tpl->newBlock("postedit");
 		$tpl->assign("ID", $id); 
 		$tpl->assign("CONTENT", $content); 
+	}
+    else {
+    	header("Location: wall.php");
+    }
     break;
 
-     case 'postsubmit':
+    case 'postsubmit':
+    if (isset($_POST['submit'])) {
 		$query = $db->prepare("UPDATE post SET content=:content WHERE id=:id;");
     	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
     	$query->bindParam(':id', $_POST['id'], PDO::PARAM_INT);
     	$query->execute();
 		header("Location: wall.php");
+	}
+    else {
+    	header("Location: wall.php");
+    }
     break;
 
     case 'comment':
@@ -180,6 +208,11 @@ switch ($page) {
 	break;
 
 	case 'deletecomment':
+	$query = $db->prepare("SELECT comment.gebruiker_id, gebruiker.email FROM comment INNER JOIN gebruiker ON comment.gebruiker_id = gebruiker.id WHERE comment.id=:id");
+    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
+    $query->execute();
+    $row = $query->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['email'] == $row['email']) {
 		$query = $db->prepare("UPDATE comment SET status=1 WHERE id=:id;");
     	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
     	$query->execute();
@@ -190,9 +223,14 @@ switch ($page) {
     	$id = $row['post_id'];
     }
     	header("Location: wall.php?page=comment&id=$id");
+    }
+    else {
+    	header("Location: wall.php");
+    }
     break;
 
    	case 'commentpost':
+   	if (isset($_POST['submit'])) {
 		$query = $db->prepare("INSERT INTO comment (content, post_id, gebruiker_id, datum) VALUES (:content, :post_id, :gebruiker_id, :datum)");
 		$datum = time() + 3600;
     	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
@@ -202,9 +240,18 @@ switch ($page) {
     	$query->execute();
     	$id = $_POST['gebruiker_id'];
         header("Location: wall.php?page=comment&id=".$_POST['post_id']."");
+    }
+    else {
+    	header("Location: wall.php");
+    }
 	break;
 
 	case 'commentedit':
+	$query = $db->prepare("SELECT comment.gebruiker_id, gebruiker.email FROM comment INNER JOIN gebruiker ON comment.gebruiker_id = gebruiker.id WHERE comment.id=:id");
+    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
+    $query->execute();
+    $row = $query->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['email'] == $row['email']) {
 		$query = $db->prepare("SELECT * FROM comment WHERE id=:id;");
     	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
     	$query->execute();
@@ -215,9 +262,14 @@ switch ($page) {
 		$tpl->newBlock("commentedit");
 		$tpl->assign("ID", $id); 
 		$tpl->assign("CONTENT", $content); 
+	}
+    else {
+    	header("Location: wall.php");
+    }
     break;
 
     case 'commentsubmit':
+    if (isset($_POST['submit'])) {
 		$query = $db->prepare("UPDATE comment SET content=:content WHERE id=:id;");
     	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
     	$query->bindParam(':id', $_POST['id'], PDO::PARAM_INT);
@@ -229,6 +281,10 @@ switch ($page) {
     	$id = $row['post_id'];
     	}
 		header("Location: wall.php?page=comment&id=$id");
+	}
+    else {
+    	header("Location: wall.php");
+    }
     break;
 
 }
