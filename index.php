@@ -14,7 +14,7 @@ if(isset($_GET['page'])){
 } else {
   $page = null;
 }
-
+$text = null;
 switch ($page) {
 	case 'registreren':
 		if(isset ($_GET['text'])) {
