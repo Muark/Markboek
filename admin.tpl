@@ -15,6 +15,7 @@
 	<div class="menu">
 	<a href="wall.php" class="link">Home</a> <br>
 	<a href="profile.php" class="link">Mijn profiel</a> <br>
+	<a href="profile.php?page=edit" class="link">Edit profiel</a> <br>
 	<a href="admin.php" class="link">Admin</a> <br>
 	<a href="index.php?page=logout" class="link">Logout</a> <br>
 	</div>

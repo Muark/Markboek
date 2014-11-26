@@ -7,21 +7,24 @@
   </head>
 
 <body>
-	<div class="all">
+
+<!-- START BLOCK : default -->
+<div class="all2">
 	<div class="header">
 	<a href="wall.php" class="link"><img src="logo.jpg" class="logo"></a>
 	<h2> Markboek </h2>
 	<div class="menu">
 	<a href="wall.php" class="link">Home</a> <br>
 	<a href="profile.php" class="link">Mijn profiel</a> <br>
+	<a href="profile.php?page=edit" class="link">Edit profiel</a> <br>
 	<a href="admin.php" class="link">Admin</a> <br>
 	<a href="index.php?page=logout" class="link">Logout</a> <br>
 	</div>
 	</div>
-<!-- START BLOCK : default -->
+	</div>
+<div class="test">
 		<div class="left">
 			<div class="{DIV}">
-			<a href="profile.php?page=edit">Edit je pagina</a>
 			</div>
 			<h1> Informatie over deze persoon </h1>
 			<p> Foto: </p>
@@ -57,11 +60,26 @@
 				<p class="submit"> <input type = "submit" value = "Post" name = "submit" class="submit"> </p>
 			</form>
 		</div>
+		</div>
 		
 		</div>
 <!-- END BLOCK : default -->
 
+
 <!-- START BLOCK : edit -->
+<div class="all">
+	<div class="header">
+	<a href="wall.php" class="link"><img src="logo.jpg" class="logo"></a>
+	<h2> Markboek </h2>
+	<div class="menu">
+	<a href="wall.php" class="link">Home</a> <br>
+	<a href="profile.php" class="link">Mijn profiel</a> <br>
+	<a href="profile.php?page=edit" class="link">Edit profiel</a> <br>
+	<a href="admin.php" class="link">Admin</a> <br>
+	<a href="index.php?page=logout" class="link">Logout</a> <br>
+	</div>
+	</div>
+<div  style="padding: 10px">
 <h1>Edit je profiel</h1>
 	{TEXT}
 	<form action="profile.php?page=submit" method="post">
@@ -99,15 +117,29 @@
 		<p> Avatar: </p>
   		<input name= "avatar" value="{AVATAR}" type = "text">
 
-  		<p class="submit"> <input type = "submit" value = "Edit" name = "submit" class="submit"> </p>
+  		<p class="submit"> <input type = "submit" value = "Edit" name = "submit" class="login"> </p>
 
   		<p> * = Verplicht </p>
 	</form>
 
 	<a href="profile.php">Terug</a>
+	</div>
+	</div>
 <!-- END BLOCK : edit -->
 
 <!-- START BLOCK : postedit -->
+<div class="all">
+	<div class="header">
+	<a href="wall.php" class="link"><img src="logo.jpg" class="logo"></a>
+	<h2> Markboek </h2>
+	<div class="menu">
+	<a href="wall.php" class="link">Home</a> <br>
+	<a href="profile.php" class="link">Mijn profiel</a> <br>
+	<a href="profile.php?page=edit" class="link">Edit profiel</a> <br>
+	<a href="admin.php" class="link">Admin</a> <br>
+	<a href="index.php?page=logout" class="link">Logout</a> <br>
+	</div>
+</div>
 <div class="postmargin">
 <h1> Wijzig je post: </h1>
 <form action="profile.php?page=postsubmit" method="post">
@@ -116,9 +148,22 @@
 	<p class="submit"> <input type = "submit" value = "Post" name = "submit" class="submit"> </p>
 </form>
 </div>
+</div>
 <!-- END BLOCK : postedit -->
 
 <!-- START BLOCK : comment -->
+<div class="all">
+	<div class="header">
+	<a href="wall.php" class="link"><img src="logo.jpg" class="logo"></a>
+	<h2> Markboek </h2>
+	<div class="menu">
+	<a href="wall.php" class="link">Home</a> <br>
+	<a href="profile.php" class="link">Mijn profiel</a> <br>
+	<a href="profile.php?page=edit" class="link">Edit profiel</a> <br>
+	<a href="admin.php" class="link">Admin</a> <br>
+	<a href="index.php?page=logout" class="link">Logout</a> <br>
+	</div>
+	</div>
 	<div class="parent">
 	<div class="post">
 	<p class="parent"> <i> <u> <a href="profile.php?userid={USERID}" class="link">{VOORNAAM} {ACHTERNAAM}</a></u>, {DATUM}  </i> {VERWIJDER} {EDIT} </p>
@@ -143,9 +188,22 @@
 				<p class="submit"> <input type = "submit" value = "Post" name = "submit" class="submit"> </p>
 			</form>
 		</div>
+		</div>
 <!-- END BLOCK : comment -->
 
 <!-- START BLOCK : commentedit -->
+<div class="all">
+	<div class="header">
+	<a href="wall.php" class="link"><img src="logo.jpg" class="logo"></a>
+	<h2> Markboek </h2>
+	<div class="menu">
+	<a href="wall.php" class="link">Home</a> <br>
+	<a href="profile.php" class="link">Mijn profiel</a> <br>
+	<a href="profile.php?page=edit" class="link">Edit profiel</a> <br>
+	<a href="admin.php" class="link">Admin</a> <br>
+	<a href="index.php?page=logout" class="link">Logout</a> <br>
+	</div>
+	</div>
 <div class="postmargin">
 <h1> Wijzig je post: </h1>
 <form action="profile.php?page=commentsubmit" method="post">
@@ -154,6 +212,6 @@
 	<p class="submit"> <input type = "submit" value = "Post" name = "submit" class="submit"> </p>
 </form>
 </div>
+</div>
 <!-- END BLOCK : commentedit -->
-		
 </body>

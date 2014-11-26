@@ -5,7 +5,9 @@ $tpl = new TemplatePower("./profile.tpl");
 $tpl->prepare();
 
 $db = new PDO('mysql:host=localhost;dbname=demuur', 'root', '');
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+include("./profilef.php"); 
 
 if(isset($_GET['page'])){
   $page = $_GET['page'];
@@ -14,15 +16,13 @@ if(isset($_GET['page'])){
 }
 
 session_start();
-if (isset($_SESSION['email'])) {
+if (isset($_SESSION['id'])) {
 switch ($page) {
 	case 'comment':
-		$query = $db->prepare("SELECT post.*, persoon.voornaam, persoon.achternaam, persoon.avatar, gebruiker.email FROM post INNER JOIN gebruiker ON post.gebruiker_id = gebruiker.id INNER JOIN persoon ON gebruiker.persoon_id = persoon.id WHERE post.id=:postid");
-     	$query->bindParam(':postid', $_GET['id'], PDO::PARAM_INT);
-      	$query->execute();
-      	foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $row) {
-				$mail = $row['email'];
-				if ($mail == $_SESSION['email']) {
+		$selectParentResult = selectParent($db, $_GET['id']);
+      	foreach ($selectParentResult->fetchAll(PDO::FETCH_ASSOC) as $row) {
+      			$gebruiker_id = $row['gebruiker_id'];
+				if ($gebruiker_id == $_SESSION['id']) {
 		      		$display = "";
 		      		$display2 = "";
 		      	}
@@ -45,21 +45,12 @@ switch ($page) {
    		$tpl->assign("POSTID", $row['id']);
    		$tpl->assign("USERID", $row['gebruiker_id']);
 
-      	$query = $db->prepare("SELECT id FROM gebruiker WHERE email=:email");
-     	$query->bindParam(':email', $_SESSION['email'], PDO::PARAM_INT);
-      	$query->execute();
-      	foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $row) {
-				$idtje = $row['id'];
-			}
+   		$tpl->assign("USER", $_SESSION['id']);
 
-   		$tpl->assign("USER", $row['id']);
-
-   		$query = $db->prepare("SELECT comment.*, persoon.voornaam, persoon.achternaam, persoon.avatar, gebruiker.email FROM comment INNER JOIN gebruiker ON comment.gebruiker_id = gebruiker.id INNER JOIN persoon ON gebruiker.persoon_id = persoon.id WHERE comment.post_id=:parentid AND comment.status=0 ORDER BY datum");
-     	$query->bindParam(':parentid', $_GET['id'], PDO::PARAM_INT);
-      	$query->execute();
-      	foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $row) {
-				$mail = $row['email'];
-				if ($mail == $_SESSION['email']) {
+   		$selectCommentResult = selectComment($db, $_GET['id']);
+      	foreach ($selectCommentResult->fetchAll(PDO::FETCH_ASSOC) as $row) {
+				$gebruiker_id = $row['gebruiker_id'];
+				if ($gebruiker_id == $_SESSION['id']) {
 		      		$display = "";
 		      		$display2 = "";
 		      	}
@@ -85,13 +76,7 @@ switch ($page) {
 
 	case 'commentpost':
 	if(isset($_POST['submit'])) {
-		$query = $db->prepare("INSERT INTO comment (content, post_id, gebruiker_id, datum) VALUES (:content, :post_id, :gebruiker_id, :datum)");
-		$datum = time() + 3600;
-    	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
-    	$query->bindParam(':post_id', $_POST['post_id'], PDO::PARAM_INT);
-    	$query->bindParam(':gebruiker_id', $_POST['gebruiker_id'], PDO::PARAM_STR);
-    	$query->bindParam(':datum', $datum, PDO::PARAM_INT);
-    	$query->execute();
+		postComment($db, $_POST['content'], $_POST['post_id'], $_POST['gebruiker_id']);
     	$id = $_POST['gebruiker_id'];
         header("Location: profile.php?page=comment&id=".$_POST['post_id']."");
     }
@@ -103,12 +88,7 @@ switch ($page) {
 
 	case 'post':
 	if (isset($_POST['submit'])) {
-		$query = $db->prepare("INSERT INTO post (content, gebruiker_id, datum) VALUES (:content, :gebruiker_id, :datum)");
-		$datum = time() + 3600;
-    	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
-    	$query->bindParam(':gebruiker_id', $_POST['gebruiker_id'], PDO::PARAM_STR);
-    	$query->bindParam(':datum', $datum, PDO::PARAM_INT);
-    	$query->execute();
+		postPost($db, $_POST['content'],  $_POST['gebruiker_id']);
     	$id = $_POST['gebruiker_id'];
         header("Location: profile.php");
     }
@@ -118,14 +98,10 @@ switch ($page) {
 	break;
 
 	case 'delete':
-	$query = $db->prepare("SELECT post.gebruiker_id, gebruiker.email FROM post INNER JOIN gebruiker ON post.gebruiker_id = gebruiker.id WHERE post.id=:id");
-    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    $query->execute();
-    $row = $query->fetch(PDO::FETCH_ASSOC);
-    if($_SESSION['email'] == $row['email']) {
-		$query = $db->prepare("UPDATE post SET status=1 WHERE id=:id;");
-    	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    	$query->execute();
+	$checkUserResult = checkUser($db, $_GET['id']);
+    $row = $checkUserResult->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['id'] == $row['gebruiker_id']) {
+		deletePost($db, $_GET['id']);
     	header("Location: profile.php");
     }
     else {
@@ -134,20 +110,13 @@ switch ($page) {
     break;
 
     case 'deletecomment':
-    $query = $db->prepare("SELECT comment.gebruiker_id, gebruiker.email FROM comment INNER JOIN gebruiker ON comment.gebruiker_id = gebruiker.id WHERE comment.id=:id");
-    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    $query->execute();
-    $row = $query->fetch(PDO::FETCH_ASSOC);
-    if($_SESSION['email'] == $row['email']) {
-		$query = $db->prepare("UPDATE comment SET status=1 WHERE id=:id;");
-    	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    	$query->execute();
-    	$query = $db->prepare("SELECT post_id FROM comment WHERE id=:id;");
-    	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    	$query->execute();
-    	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+    $checkUser2Result = checkUser2($db, $_GET['id']);
+    $row = $checkUser2Result->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['id'] == $row['gebruiker_id']) {
+		$deleteCommentResult = deleteComment($db, $_GET['id']);
+    	while($row = $deleteCommentResult->fetch(PDO::FETCH_ASSOC)) {
     	$id = $row['post_id'];
-    	}
+    }
     	header("Location: profile.php?page=comment&id=$id");
     }
     else {
@@ -156,15 +125,11 @@ switch ($page) {
     break;
 
     case 'postedit':
-    $query = $db->prepare("SELECT post.gebruiker_id, gebruiker.email FROM post INNER JOIN gebruiker ON post.gebruiker_id = gebruiker.id WHERE post.id=:id");
-    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    $query->execute();
-    $row = $query->fetch(PDO::FETCH_ASSOC);
-    if($_SESSION['email'] == $row['email']) {
-		$query = $db->prepare("SELECT * FROM post WHERE id=:id;");
-    	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    	$query->execute();
-    	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+    $checkUserResult = checkUser($db, $_GET['id']);
+    $row = $checkUserResult->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['id'] == $row['gebruiker_id']) {
+		$selectEditResult = selectEdit($db, $_GET['id']);
+    	while($row = $selectEditResult->fetch(PDO::FETCH_ASSOC)) {
     		$id = $row['id'];
 			$content = $row['content'];
 		}
@@ -178,15 +143,11 @@ switch ($page) {
     break;
 
     case 'commentedit':
-    $query = $db->prepare("SELECT comment.gebruiker_id, gebruiker.email FROM comment INNER JOIN gebruiker ON comment.gebruiker_id = gebruiker.id WHERE comment.id=:id");
-    $query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    $query->execute();
-    $row = $query->fetch(PDO::FETCH_ASSOC);
-    if($_SESSION['email'] == $row['email']) {
-		$query = $db->prepare("SELECT * FROM comment WHERE id=:id;");
-    	$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    	$query->execute();
-    	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+    $checkUser2Result = checkUser2($db, $_GET['id']);
+    $row = $checkUser2Result->fetch(PDO::FETCH_ASSOC);
+    if($_SESSION['id'] == $row['gebruiker_id']) {
+		$commentEditResult = commentEdit($db, $_GET['id']);
+    	while($row = $commentEditResult->fetch(PDO::FETCH_ASSOC)) {
     		$id = $row['id'];
 			$content = $row['content'];
 		}
@@ -201,10 +162,7 @@ switch ($page) {
 
     case 'postsubmit':
     if (isset($_POST['submit'])) {
-		$query = $db->prepare("UPDATE post SET content=:content WHERE id=:id;");
-    	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
-    	$query->bindParam(':id', $_POST['id'], PDO::PARAM_INT);
-    	$query->execute();
+		updatePost($db, $_POST['content'], $_POST['id']);
 		header("Location: profile.php");
 	}
     else {
@@ -214,14 +172,8 @@ switch ($page) {
 
     case 'commentsubmit':
     if (isset($_POST['submit'])) {
-		$query = $db->prepare("UPDATE comment SET content=:content WHERE id=:id;");
-    	$query->bindParam(':content', $_POST['content'], PDO::PARAM_STR);
-    	$query->bindParam(':id', $_POST['id'], PDO::PARAM_INT);
-    	$query->execute();
-    	$query = $db->prepare("SELECT post_id FROM comment WHERE id=:id;");
-    	$query->bindParam(':id', $_POST['id'], PDO::PARAM_INT);
-    	$query->execute();
-    	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+		$updateCommentResult = updateComment($db, $_POST['id']);
+    	while($row = $updateCommentResult->fetch(PDO::FETCH_ASSOC)) {
     	$id = $row['post_id'];
     	}
 		header("Location: profile.php?page=comment&id=$id");
@@ -237,20 +189,14 @@ switch ($page) {
 		$text = "<div class=\"error\">" . $_GET['text'] . "</div>";
 		}
 
-		$query = $db->prepare("SELECT * FROM gebruiker WHERE email=:email");
- 		$query->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-  		$query->execute();
-  		$row = $query;
-  		while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+		$selectPersoonResult = selectPersoon($db, $_SESSION['id']);
+  		while($row = $selectPersoonResult->fetch(PDO::FETCH_ASSOC)) {
 			$email = $row['email'];
 			$persoon_id = $row['persoon_id'];
 		}
 
-		$query = $db->prepare("SELECT * FROM persoon WHERE id=:persoon_id");
- 		$query->bindParam(':persoon_id', $persoon_id, PDO::PARAM_STR);
-  		$query->execute();
-  		$row = $query;
-  		while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+		$selectGegevensResult = selectGegevens($db, $persoon_id);
+  		while($row = $selectGegevensResult->fetch(PDO::FETCH_ASSOC)) {
 			$voornaam = $row['voornaam'];
 			$achternaam = $row['achternaam'];
 			$geboortedatum = $row['geboortedatum'];
@@ -278,40 +224,19 @@ switch ($page) {
 
 	case 'submit':
 	if (isset($_POST['submit'])) {
-	$query = $db->prepare("SELECT * FROM gebruiker WHERE email=:email");
-	$query->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-	$query->execute();
-	$row = $query;
-	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
-		$id = $row['persoon_id'];
-	}
+		$selectPersoonResult = selectPersoon($db, $_SESSION['id']);
+		while($row = $selectPersoonResult->fetch(PDO::FETCH_ASSOC)) {
+			$id = $row['persoon_id'];
+		}
+		if(isset($_POST['voornaam'], $_POST['achternaam'], $_POST['geboortedatum'], $_POST['geslacht'], $_POST['adres'], $_POST['postcode'], $_POST['woonplaats'])){
 
-	if(isset($_POST['voornaam'], $_POST['achternaam'], $_POST['geboortedatum'], $_POST['geslacht'], $_POST['adres'], $_POST['postcode'], $_POST['woonplaats'])){
-
-
-        $query = $db->prepare("UPDATE persoon SET voornaam=:voornaam, achternaam=:achternaam, geboortedatum=:geboortedatum, geslacht=:geslacht, adres=:adres, postcode=:postcode, woonplaats=:woonplaats, telefoon=:telefoon, mobiel=:mobiel, avatar=:avatar WHERE id=:id");
-
-            
-            $geboortedatum = strtotime($_POST['geboortedatum']) + 3600;
-        
-        $query->bindParam(':voornaam', $_POST['voornaam'], PDO::PARAM_STR);
-        $query->bindParam(':achternaam', $_POST['achternaam'], PDO::PARAM_STR);
-        $query->bindParam(':geboortedatum', $geboortedatum , PDO::PARAM_INT);
-        $query->bindParam(':geslacht', $_POST['geslacht'], PDO::PARAM_STR);
-        $query->bindParam(':adres', $_POST['adres'], PDO::PARAM_STR);
-        $query->bindParam(':postcode', $_POST['postcode'], PDO::PARAM_STR);
-        $query->bindParam(':woonplaats', $_POST['woonplaats'], PDO::PARAM_STR);
-        $query->bindParam(':telefoon', $_POST['telefoon'], PDO::PARAM_STR);
-        $query->bindParam(':mobiel', $_POST['mobiel'], PDO::PARAM_STR);
-        $query->bindParam(':avatar', $_POST['avatar'], PDO::PARAM_STR);
-        $query->bindParam(':id', $id, PDO::PARAM_INT);
-        $query->execute();
-        
-		header("Location: profile.php");	
-    } 
-	else {
-		header("Location: profile.php?page=edit&text=Je hebt een veld onjuist ingevoert.");
-	}
+			updateUser($db, $_POST['geboortedatum'], $_POST['voornaam'], $_POST['achternaam'], $_POST['geslacht'], $_POST['adres'], $_POST['postcode'], $_POST['woonplaats'], $_POST['telefoon'], $_POST['mobiel'], $_POST['avatar'], $id);
+		    
+			header("Location: profile.php");	
+		} 
+		else {
+			header("Location: profile.php?page=edit&text=Je hebt een veld onjuist ingevoert.");
+		}
 	}
     else {
     	header("Location: profile.php");
@@ -323,29 +248,17 @@ switch ($page) {
 			$userid = $_GET['userid'];
 		}
 		else {
-			$query = $db->prepare("SELECT id FROM gebruiker WHERE email=:email");
-     		$query->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-      		$query->execute();
-      		$row = $query;
-      		while($row = $query->fetch(PDO::FETCH_ASSOC)) {
-				$userid = $row['id'];
-			}
+			$userid = $_SESSION['id'];
 		}
 		
 
-		$query = $db->prepare("SELECT persoon_id FROM gebruiker WHERE id=:userid");
-     	$query->bindParam(':userid', $userid, PDO::PARAM_INT);
-      	$query->execute();
-      	$row = $query;
-      	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+		$selectUserIDResult = selectUserID($db, $userid);
+      	while($row = $selectUserIDResult->fetch(PDO::FETCH_ASSOC)) {
 			$persoonid = $row['persoon_id'];
 		}
 
-		$query = $db->prepare("SELECT * FROM persoon WHERE id=:persoonid");
-     	$query->bindParam(':persoonid', $persoonid, PDO::PARAM_INT);
-      	$query->execute();
-      	$row = $query;
-      	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+		$selectInfoResult = selectInfo($db, $persoonid);
+      	while($row = $selectInfoResult->fetch(PDO::FETCH_ASSOC)) {
 	      	$avatar = $row['avatar'];
 	      	$voornaam = $row['voornaam'];
 	      	$achternaam = $row['achternaam'];
@@ -364,13 +277,10 @@ switch ($page) {
         $tpl->assign("GESLACHT", $geslacht);
         $tpl->assign("WOONPLAATS", $woonplaats);
 
-        $query = $db->prepare("SELECT email FROM gebruiker WHERE id=:userid");
-     	$query->bindParam(':userid', $userid, PDO::PARAM_INT);
-     	$query->execute();
-     	$row = $query;
-     	while($row = $query->fetch(PDO::FETCH_ASSOC)) {
-			$mail = $row['email'];
-			if ($mail == $_SESSION['email']) {
+        $selectIDResult = selectID($db, $userid);
+     	while($row = $selectIDResult->fetch(PDO::FETCH_ASSOC)) {
+			$gebruiker_id = $row['id'];
+			if ($gebruiker_id == $_SESSION['id']) {
 	      		$div = "profile1";
 	      	}
 	      	else {
@@ -382,12 +292,10 @@ switch ($page) {
         $tpl->assign("DIV", $div);
 
 
-      	$query = $db->prepare("SELECT post.*, persoon.voornaam, persoon.achternaam, persoon.avatar, gebruiker.email FROM post INNER JOIN gebruiker ON post.gebruiker_id = gebruiker.id INNER JOIN persoon ON gebruiker.persoon_id = persoon.id WHERE gebruiker.id=:userid AND post.status=0 ORDER BY datum desc");
-     	$query->bindParam(':userid', $userid, PDO::PARAM_INT);
-      	$query->execute();
-      	foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $row) {
-				$mail = $row['email'];
-				if ($mail == $_SESSION['email']) {
+      	$selectInfo2Result = selectInfo2($db, $userid);
+      	foreach ($selectInfo2Result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+				$gebruiker_id = $row['gebruiker_id'];
+				if ($gebruiker_id == $_SESSION['id']) {
 		      		$display = "";
 		      		$display2 = "";
 		      	}
@@ -409,11 +317,9 @@ switch ($page) {
        		$tpl->assign("POSTID", $row['id']);
        		$tpl->assign("USERID", $row['gebruiker_id']);
 
-       		$query = $db->prepare("SELECT * FROM comment WHERE post_id = :post_id AND status = 0");
-	     	$query->bindParam(':post_id', $row['id'], PDO::PARAM_INT);
-	      	$query->execute();
+       		$selectCommentsResult = selectComments($db, $row['id']);
 	      	$comments = 0;
-	      	foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $row) {
+	      	foreach ($selectCommentsResult->fetchAll(PDO::FETCH_ASSOC) as $row) {
 					$comments = $comments + 1;
 			}
 			$tpl->assign("COMMENTS", $comments);

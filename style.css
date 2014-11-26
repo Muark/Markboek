@@ -50,6 +50,18 @@ div.all {
 	padding-bottom: 10px;
 }
 
+div.all2 {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 50px;
+	width: 1050px;
+	border-left: 1px solid #959596;
+	border-right: 1px solid #959596;
+	border-top: 1px solid #959596;
+	border-top-left-radius: 10px;
+	background-color : rgba(255,255,255,0.7);
+}
+
 div.error {
     background-color: red;
     color: black;
@@ -81,7 +93,7 @@ h2 {
 	font-family: kristen itc;
 	margin: 0px;
 	margin-left: 850px;
-	font-size: 30px;
+	font-size: 29.4px;
 	font-family: kristen itc;
 }
 
@@ -133,8 +145,14 @@ div.left {
 	float: left;
 }
 
+div.test {
+	width: 1052px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 div.right {
-	width: 584px;
+	width: 586px;
 	background-color : white;
 	border-bottom: 1px solid #959596;
 	border-right: 1px solid #959596;
