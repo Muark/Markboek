@@ -109,7 +109,7 @@ function selectGegevens($db, $persoon_id) {
   	return $query;
 }
 
-function updateUser($db, $datum, $voornaam, $achternaam, $geslacht, $adres, $postcode, $woonplaats, $telefoon, $mobiel, $avatar, $id) {
+function updateUser($db, $datum, $voornaam, $achternaam, $geslacht, $adres, $postcode, $woonplaats, $telefoon, $mobiel, $avatar, $id, $password) {
 	$query = $db->prepare("UPDATE persoon SET voornaam=:voornaam, achternaam=:achternaam, geboortedatum=:geboortedatum, geslacht=:geslacht, adres=:adres, postcode=:postcode, woonplaats=:woonplaats, telefoon=:telefoon, mobiel=:mobiel, avatar=:avatar WHERE id=:id");
       
     $geboortedatum = strtotime($datum) + 3600;
@@ -126,6 +126,12 @@ function updateUser($db, $datum, $voornaam, $achternaam, $geslacht, $adres, $pos
     $query->bindParam(':avatar', $avatar, PDO::PARAM_STR);
     $query->bindParam(':id', $id, PDO::PARAM_INT);
     $query->execute();
+
+    $query = $db->prepare("UPDATE gebruiker SET password = :password WHERE persoon_id=:id");
+    $query->bindParam(':password', $password, PDO::PARAM_STR);
+    $query->bindParam(':id', $id, PDO::PARAM_INT);
+    $query->execute();
+      
 }
 
 function selectUserID($db, $userid) {

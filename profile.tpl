@@ -83,6 +83,13 @@
 <h1>Edit je profiel</h1>
 	{TEXT}
 	<form action="profile.php?page=submit" method="post">
+
+		<p> *Wachtwoord: </p> 
+		<input name = "password" value="{PASSWORD}" type = "password" required>
+
+		<p> *Wachtwoord herhalen: </p> 
+		<input name = "password2" value="{PASSWORD}" type = "password" required>
+
 		<p> *Voornaam: </p> 
 		<input name = "voornaam" value="{VOORNAAM}" type = "text" required>
 

@@ -195,6 +195,7 @@ switch ($page) {
   		while($row = $selectPersoonResult->fetch(PDO::FETCH_ASSOC)) {
 			$email = $row['email'];
 			$persoon_id = $row['persoon_id'];
+      $password = $row['password'];
 		}
 
 		$selectGegevensResult = selectGegevens($db, $persoon_id);
@@ -211,17 +212,18 @@ switch ($page) {
 		}
 		$geboortedatum2 = gmdate("Y-m-d", $geboortedatum);
 		$tpl->newBlock("edit");
-		$tpl->assign("EMAIL", $email); 
-        $tpl->assign("VOORNAAM", $voornaam); 
-        $tpl->assign("ACHTERNAAM", $achternaam); 
-        $tpl->assign("GEBOORTEDATUM", $geboortedatum2);
-        $tpl->assign("ADRES", $adres);
-        $tpl->assign("POSTCODE", $postcode);
-        $tpl->assign("WOONPLAATS", $woonplaats);
-        $tpl->assign("TELEFOON", $telefoon);
-        $tpl->assign("MOBIEL", $mobiel);
-        $tpl->assign("AVATAR", $avatar);
-        $tpl->assign("TEXT", $text); 
+		$tpl->assign("EMAIL", $email);
+    $tpl->assign("PASSWORD", $password); 
+    $tpl->assign("VOORNAAM", $voornaam); 
+    $tpl->assign("ACHTERNAAM", $achternaam); 
+    $tpl->assign("GEBOORTEDATUM", $geboortedatum2);
+    $tpl->assign("ADRES", $adres);
+    $tpl->assign("POSTCODE", $postcode);
+    $tpl->assign("WOONPLAATS", $woonplaats);
+    $tpl->assign("TELEFOON", $telefoon);
+    $tpl->assign("MOBIEL", $mobiel);
+    $tpl->assign("AVATAR", $avatar);
+    $tpl->assign("TEXT", $text); 
 	break;
 
 	case 'submit':
@@ -230,15 +232,21 @@ switch ($page) {
 		while($row = $selectPersoonResult->fetch(PDO::FETCH_ASSOC)) {
 			$id = $row['persoon_id'];
 		}
-		if(isset($_POST['voornaam'], $_POST['achternaam'], $_POST['geboortedatum'], $_POST['geslacht'], $_POST['adres'], $_POST['postcode'], $_POST['woonplaats'])){
+		if(isset($_POST['password'], $_POST['password2'], $_POST['voornaam'], $_POST['achternaam'], $_POST['geboortedatum'], $_POST['geslacht'], $_POST['adres'], $_POST['postcode'], $_POST['woonplaats'])){
+      if ($_POST['password'] == $_POST['password2']) {
 
-			updateUser($db, $_POST['geboortedatum'], $_POST['voornaam'], $_POST['achternaam'], $_POST['geslacht'], $_POST['adres'], $_POST['postcode'], $_POST['woonplaats'], $_POST['telefoon'], $_POST['mobiel'], $_POST['avatar'], $id);
+			updateUser($db, $_POST['geboortedatum'], $_POST['voornaam'], $_POST['achternaam'], $_POST['geslacht'], $_POST['adres'], $_POST['postcode'], $_POST['woonplaats'], $_POST['telefoon'], $_POST['mobiel'], $_POST['avatar'], $id, $_POST['password']);
 		    
 			header("Location: profile.php");	
+        }
+    else {
+      header("Location: profile.php?page=edit&text=De wachtwoorden komen niet overeen.");
+    }
 		} 
 		else {
 			header("Location: profile.php?page=edit&text=Je hebt een veld onjuist ingevoert.");
 		}
+
 	}
     else {
     	header("Location: profile.php");
