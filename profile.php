@@ -36,7 +36,8 @@ switch ($page) {
       		$datum = gmdate("d-m-Y", $row['datum']);
       	}
       	$tpl->newBlock("comment");
-      	$tpl->assign("CONTENT", $row['content']);
+      	$content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+	    $tpl->assign("CONTENT", $content);
    		$tpl->assign("DATUM",  $datum);
    		$tpl->assign("VOORNAAM", $row['voornaam']);
    		$tpl->assign("ACHTERNAAM", $row['achternaam']);
@@ -63,7 +64,8 @@ switch ($page) {
       		$edit = $display . ' <a href="profile.php?page=commentedit&id='.$postid.'"> <img src="edit.gif"  class="delete"> </a> ' . $display2;
       		$datum = gmdate("d-m-Y", $row['datum']);
       		$tpl->newBlock("default_comment");
-	      	$tpl->assign("CONTENT", $row['content']);
+	      	$content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+	      	$tpl->assign("CONTENT", $content);
        		$tpl->assign("DATUM",  $datum);
        		$tpl->assign("VOORNAAM", $row['voornaam']);
        		$tpl->assign("ACHTERNAAM", $row['achternaam']);
@@ -308,7 +310,8 @@ switch ($page) {
       		$edit = $display . ' <a href="profile.php?page=postedit&id='.$postid.'"> <img src="edit.gif"  class="delete"> </a> ' . $display2;
       		$datum = gmdate("d-m-Y", $row['datum']);
       		$tpl->newBlock("default_post");
-	      	$tpl->assign("CONTENT", $row['content']);
+			$content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+	      	$tpl->assign("CONTENT", $content);
        		$tpl->assign("DATUM",  $datum);
        		$tpl->assign("VOORNAAM", $row['voornaam']);
        		$tpl->assign("ACHTERNAAM", $row['achternaam']);

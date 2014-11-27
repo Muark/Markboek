@@ -37,7 +37,7 @@ function registreren2($db, $email, $password, $stts, $groepid, $LII) {
 }
 
 function login($db, $email, $password) {
-	$query = $db->prepare("SELECT id FROM gebruiker WHERE email=:email AND password=:password");
+	$query = $db->prepare("SELECT id FROM gebruiker WHERE email=:email AND password=:password AND status=0");
 	$query->bindParam(':email', $email);
 	$query->bindParam(':password', $password);
 	$query->execute();

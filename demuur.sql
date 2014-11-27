@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `comment` (
   CONSTRAINT `FK_comment_comment` FOREIGN KEY (`parent_id`) REFERENCES `comment` (`id`),
   CONSTRAINT `FK_comment_gebruiker` FOREIGN KEY (`gebruiker_id`) REFERENCES `gebruiker` (`id`),
   CONSTRAINT `FK_comment_post` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
 
 -- Dumpen data van tabel demuur.comment: ~26 rows (ongeveer)
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
@@ -61,7 +61,16 @@ INSERT INTO `comment` (`id`, `content`, `datum`, `status`, `post_id`, `gebruiker
 	(26, '  345 ', 1416936796, '1', 38, 4, NULL),
 	(27, ' aa', 1416937837, '0', 31, 4, NULL),
 	(28, ' aaa', 1416938896, '1', 38, 4, NULL),
-	(29, ' grtrrr', 1416947874, '1', 40, 14, NULL);
+	(29, ' grtrrr', 1416947874, '1', 40, 14, NULL),
+	(30, '  COMMENTaa', 1416995029, '1', 53, 15, NULL),
+	(31, '  dasdsdsdasdassad', 1416995069, '1', 55, 15, NULL),
+	(32, ' BB', 1416995093, '0', 55, 15, NULL),
+	(33, ' CC', 1416995094, '0', 55, 15, NULL),
+	(34, ' a', 1417097328, '0', 33, 4, NULL),
+	(35, ' a', 1417097329, '0', 33, 4, NULL),
+	(36, ' c', 1417097331, '0', 33, 4, NULL),
+	(37, '  hoi\r\nhey \r\nhey', 1417098167, '0', 58, 4, NULL),
+	(38, '  hey\r\nhey \r\nhey', 1417098358, '1', 59, 4, NULL);
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 
 
@@ -78,16 +87,17 @@ CREATE TABLE IF NOT EXISTS `gebruiker` (
   KEY `FK_gebruiker_persoon` (`persoon_id`),
   CONSTRAINT `FK_gebruiker_groep` FOREIGN KEY (`groep_id`) REFERENCES `groep` (`id`),
   CONSTRAINT `FK_gebruiker_persoon` FOREIGN KEY (`persoon_id`) REFERENCES `persoon` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 
--- Dumpen data van tabel demuur.gebruiker: ~4 rows (ongeveer)
+-- Dumpen data van tabel demuur.gebruiker: ~5 rows (ongeveer)
 /*!40000 ALTER TABLE `gebruiker` DISABLE KEYS */;
 INSERT INTO `gebruiker` (`id`, `email`, `password`, `status`, `groep_id`, `persoon_id`) VALUES
 	(4, 'mark-rademaker@hotmail.nl', '123', 0, 2, 2),
 	(10, 'kevin1302@hotmail.com', '123', 0, 1, 7),
 	(11, 'frits@hotmail.com', '123', 0, 1, 8),
 	(12, 'test@test.com', '12345', 1, 1, 9),
-	(14, 'testaccount@hotmail.nl', '123', 1, 1, 12);
+	(14, 'testaccount@hotmail.nl', '123', 1, 1, 12),
+	(15, 'account@hotmail.com', '12345', 0, 1, 13);
 /*!40000 ALTER TABLE `gebruiker` ENABLE KEYS */;
 
 
@@ -106,24 +116,24 @@ INSERT INTO `groep` (`id`, `type`) VALUES
 /*!40000 ALTER TABLE `groep` ENABLE KEYS */;
 
 
--- Structuur van  tabel demuur.like wordt geschreven
-CREATE TABLE IF NOT EXISTS `like` (
+-- Structuur van  tabel demuur.likes wordt geschreven
+CREATE TABLE IF NOT EXISTS `likes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `gebruiker_id` int(11) DEFAULT NULL,
-  `type` varchar(15) DEFAULT NULL,
-  `type_id` int(11) DEFAULT NULL,
-  `datum` date DEFAULT NULL,
+  `gebruiker_id` int(11) NOT NULL,
+  `type` varchar(15) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `datum` int(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_like_gebruiker` (`gebruiker_id`),
-  KEY `FK_like_post` (`type_id`),
-  CONSTRAINT `FK_like_comment` FOREIGN KEY (`type_id`) REFERENCES `comment` (`id`),
-  CONSTRAINT `FK_like_gebruiker` FOREIGN KEY (`gebruiker_id`) REFERENCES `gebruiker` (`id`),
-  CONSTRAINT `FK_like_post` FOREIGN KEY (`type_id`) REFERENCES `post` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `FK_like_comment` (`type_id`),
+  CONSTRAINT `FK_like_gebruiker` FOREIGN KEY (`gebruiker_id`) REFERENCES `gebruiker` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dumpen data van tabel demuur.like: ~0 rows (ongeveer)
-/*!40000 ALTER TABLE `like` DISABLE KEYS */;
-/*!40000 ALTER TABLE `like` ENABLE KEYS */;
+-- Dumpen data van tabel demuur.likes: ~0 rows (ongeveer)
+/*!40000 ALTER TABLE `likes` DISABLE KEYS */;
+INSERT INTO `likes` (`id`, `gebruiker_id`, `type`, `type_id`, `datum`) VALUES
+	(1, 4, 'post', 31, 1416965594);
+/*!40000 ALTER TABLE `likes` ENABLE KEYS */;
 
 
 -- Structuur van  tabel demuur.persoon wordt geschreven
@@ -140,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `persoon` (
   `mobiel` varchar(50) DEFAULT NULL,
   `avatar` varchar(250) DEFAULT 'http://kfc.com.au/media/82236/chicken-originalrecipe_1pce.jpg',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 -- Dumpen data van tabel demuur.persoon: ~4 rows (ongeveer)
 /*!40000 ALTER TABLE `persoon` DISABLE KEYS */;
@@ -149,7 +159,8 @@ INSERT INTO `persoon` (`id`, `voornaam`, `achternaam`, `geboortedatum`, `geslach
 	(7, 'aaa', 'aaa', 2014, 'Man', 'ssdsd', 'sadsasad', 'sadsasad', '11', '11', 'http://kfc.com.au/media/82236/chicken-originalrecipe_1pce.jpg'),
 	(8, 'aaa', 'aaa', 1414796400, 'Man', 'jaap', 'baard', 'aa', '', '', 'http://kfc.com.au/media/82236/chicken-originalrecipe_1pce.jpg'),
 	(9, 'Hallo', 'Test', 1414972800, 'Man', 'Straat', 'Postcode', 'Woonplaats', '111', '222', 'http://kfc.com.au/media/82236/chicken-originalrecipe_1pce.jpg'),
-	(12, 'Test1', 'Account1', 662688000, 'Vrouw', 'Straat 121', '1234XX1', 'Stad1', '07844556671', '06112233441', 'http://kfc.com.au/media/82236/chicken-originalrecipe_1pce.jpg');
+	(12, 'Test1', 'Account1', 662688000, 'Vrouw', 'Straat 121', '1234XX1', 'Stad1', '07844556671', '06112233441', 'http://kfc.com.au/media/82236/chicken-originalrecipe_1pce.jpg'),
+	(13, 'Jan', 'De Boer', 789696000, 'Man', 'De Straat 123', '2973AG', 'Stadje', '0556785958', '0675849675', 'http://kfc.com.au/media/82236/chicken-originalrecipe_1pce.jpg');
 /*!40000 ALTER TABLE `persoon` ENABLE KEYS */;
 
 
@@ -163,9 +174,9 @@ CREATE TABLE IF NOT EXISTS `post` (
   PRIMARY KEY (`id`),
   KEY `FK_post_gebruiker` (`gebruiker_id`),
   CONSTRAINT `FK_post_gebruiker` FOREIGN KEY (`gebruiker_id`) REFERENCES `gebruiker` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=latin1;
 
--- Dumpen data van tabel demuur.post: ~17 rows (ongeveer)
+-- Dumpen data van tabel demuur.post: ~20 rows (ongeveer)
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
 INSERT INTO `post` (`id`, `content`, `datum`, `status`, `gebruiker_id`) VALUES
 	(1, 'Hallo', 1416216146, '1', 10),
@@ -178,17 +189,24 @@ INSERT INTO `post` (`id`, `content`, `datum`, `status`, `gebruiker_id`) VALUES
 	(28, ' jo', 1416396057, '1', 4),
 	(29, ' jo', 1416397468, '1', 4),
 	(30, 'jaaaaa', 1416497137, '1', 12),
-	(31, '     hoii ', 1416818624, '0', 4),
+	(31, '     hoii ', 1416818624, '1', 4),
 	(32, ' ', 1416818639, '1', 4),
 	(33, ' joehoe', 1416818966, '0', 10),
 	(34, ' aa', 1416819985, '1', 4),
 	(35, ' ', 1416835519, '1', 4),
 	(36, ' qq', 1416842003, '1', 4),
 	(37, ' dd', 1416842551, '1', 4),
-	(38, '   123 ', 1416843634, '0', 4),
+	(38, '   123 ', 1416843634, '1', 4),
 	(39, ' Jo', 1416937381, '1', 4),
 	(40, ' oi', 1416945688, '1', 14),
-	(52, ' asas', 1416965594, '1', 4);
+	(52, ' asas', 1416965594, '1', 4),
+	(53, '  JOE A', 1416995018, '1', 15),
+	(54, ' KIP', 1416995055, '1', 15),
+	(55, 'AA', 1416995058, '0', 15),
+	(56, ' n', 1417097133, '1', 4),
+	(57, ' hallo\r\nhallo', 1417097499, '0', 4),
+	(58, ' hey\r\nhallo\r\nhoi', 1417097886, '1', 4),
+	(59, '  hey \r\nhey \r\nhey', 1417098353, '1', 4);
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

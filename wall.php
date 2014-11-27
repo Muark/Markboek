@@ -47,7 +47,8 @@ switch ($page) {
       		$edit = $display . ' <a href="wall.php?page=postedit&id='.$postid.'"> <img src="edit.gif"  class="delete"> </a> ' . $display2;
       		$datum = gmdate("d-m-Y", $row['datum']);
       		$tpl->newBlock("default_post");
-	      	$tpl->assign("CONTENT", $row['content']);
+          $content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+	      	$tpl->assign("CONTENT", $content);
        		$tpl->assign("DATUM",  $datum);
        		$tpl->assign("VOORNAAM", $row['voornaam']);
        		$tpl->assign("ACHTERNAAM", $row['achternaam']);
@@ -57,12 +58,12 @@ switch ($page) {
        		$tpl->assign("USERID", $row['gebruiker_id']);
 
        		$aantalCommentsResult = aantalComments($db, $row['id']);
-
 	      	$comments = 0;
 	      	foreach ($aantalCommentsResult->fetchAll(PDO::FETCH_ASSOC) as $row) {
-					$comments = $comments + 1;
-			}
-			$tpl->assign("COMMENTS", $comments);
+					   $comments = $comments + 1;
+    			}
+    			$tpl->assign("COMMENTS", $comments);
+
       	}
 
 	break;
@@ -138,7 +139,8 @@ switch ($page) {
       		$datum = gmdate("d-m-Y", $row['datum']);
       	}
       	$tpl->newBlock("comment");
-      	$tpl->assign("CONTENT", $row['content']);
+      $content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+      $tpl->assign("CONTENT", $content);
    		$tpl->assign("DATUM",  $datum);
    		$tpl->assign("VOORNAAM", $row['voornaam']);
    		$tpl->assign("ACHTERNAAM", $row['achternaam']);
@@ -165,7 +167,8 @@ switch ($page) {
       		$edit = $display . ' <a href="wall.php?page=commentedit&id='.$postid.'"> <img src="edit.gif"  class="delete"> </a> ' . $display2;
       		$datum = gmdate("d-m-Y", $row['datum']);
       		$tpl->newBlock("default_comment");
-	      	$tpl->assign("CONTENT", $row['content']);
+	      	$content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+          $tpl->assign("CONTENT", $content);
        		$tpl->assign("DATUM",  $datum);
        		$tpl->assign("VOORNAAM", $row['voornaam']);
        		$tpl->assign("ACHTERNAAM", $row['achternaam']);

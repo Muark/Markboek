@@ -35,7 +35,8 @@ if (isset($_SESSION['id'])) {
 		      		$delete = ' <a href="admin.php?page=delete&id='.$postid.'"> <img src="delete.gif"  class="delete"> </a> ';
 		      		$datum = gmdate("d-m-Y", $row['datum']);
 		      		$tpl->newBlock("default_post");
-			      	$tpl->assign("CONTENT", $row['content']);
+			      	$content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+	      			$tpl->assign("CONTENT", $content);
 		       		$tpl->assign("DATUM",  $datum);
 		       		$tpl->assign("VOORNAAM", $row['voornaam']);
 		       		$tpl->assign("ACHTERNAAM", $row['achternaam']);
@@ -66,7 +67,8 @@ if (isset($_SESSION['id'])) {
 		      		$datum = gmdate("d-m-Y", $row['datum']);
 		      	}
 		      	$tpl->newBlock("comment");
-		      	$tpl->assign("CONTENT", $row['content']);
+		      	$content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+	      		$tpl->assign("CONTENT", $content);
 		   		$tpl->assign("DATUM",  $datum);
 		   		$tpl->assign("VOORNAAM", $row['voornaam']);
 		   		$tpl->assign("ACHTERNAAM", $row['achternaam']);
@@ -83,7 +85,8 @@ if (isset($_SESSION['id'])) {
 		      		$delete = ' <a href="admin.php?page=deletecomment&id='.$postid.'"> <img src="delete.gif"  class="delete"> </a> ';
 		      		$datum = gmdate("d-m-Y", $row['datum']);
 		      		$tpl->newBlock("default_comment");
-			      	$tpl->assign("CONTENT", $row['content']);
+			      	$content = nl2br(htmlentities($row['content'], ENT_QUOTES, 'UTF-8'));
+	      			$tpl->assign("CONTENT", $content);
 		       		$tpl->assign("DATUM",  $datum);
 		       		$tpl->assign("VOORNAAM", $row['voornaam']);
 		       		$tpl->assign("ACHTERNAAM", $row['achternaam']);

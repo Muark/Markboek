@@ -28,6 +28,7 @@
 				<input name= "gebruiker_id" type = "text" value="{ID}" hidden>
 				<p class="submit"> <input type = "submit" value = "Post" name = "submit" class="submit"> </p>
 			</form>
+			{LIKES}
 			<h1> Posts </h1>
 		<!-- START BLOCK : default_post -->
 			<div class="post">
